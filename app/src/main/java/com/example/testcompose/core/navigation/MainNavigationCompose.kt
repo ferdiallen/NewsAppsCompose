@@ -20,5 +20,11 @@ fun MainNavigationCompose() {
         composable(route = NavigationSealedClass.MainMenu.route) {
             MainScreen()
         }
+        composable(route = NavigationSealedClass.CreateMenu.route){
+
+        }
+        composable(route = NavigationSealedClass.SettingsMenu.route){
+
+        }
     }
 }

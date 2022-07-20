@@ -8,15 +8,15 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowBackIos
-import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.runtime.*
@@ -34,6 +34,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.testcompose.utils.ImageRequestLoader
@@ -41,13 +42,27 @@ import com.example.testcompose.utils.ImageRequestLoader
 private val tagListName = listOf("All", "Games", "Sports", "Technology")
 
 @Composable
-fun MainScreen() {
+fun MainScreen(vm: MainScreenViewModel = hiltViewModel()) {
     val interactionSource = remember {
         MutableInteractionSource()
     }
     val focusRequest = LocalFocusManager.current
     Scaffold(
-        Modifier.fillMaxSize(),
+        Modifier.fillMaxSize(), bottomBar = {
+            BottomNavigation(backgroundColor = Color.LightGray) {
+                BottomNavigationItem(
+                    selected = true,
+                    onClick = { /*TODO*/ },
+                    icon = {
+                        Icon(imageVector = Icons.Filled.Home, contentDescription = "")
+                    },
+                    unselectedContentColor = Color.Gray,
+                    selectedContentColor = Color.Blue.copy(0.6F), label = {
+                        Text(text = "Home")
+                    }
+                )
+            }
+        }
     ) { contentPadding ->
         Column(
             Modifier
@@ -65,18 +80,19 @@ fun MainScreen() {
             Spacer(modifier = Modifier.height(12.dp))
             HeaderRow()
             Spacer(modifier = Modifier.height(24.dp))
-            MiddleScreen()
+            MiddleScreen(vm)
         }
     }
 }
 
 @Composable
-fun MiddleScreen() {
+fun MiddleScreen(vm: MainScreenViewModel) {
     Column(
         Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        OutlinedTextField(value = "",
-            onValueChange = {},
+        OutlinedTextField(
+            value = vm.searchNews,
+            onValueChange = vm::onNewsSearchChange,
             modifier = Modifier.fillMaxWidth(0.9F),
             shape = RoundedCornerShape(32.dp),
             leadingIcon = {
@@ -89,7 +105,8 @@ fun MiddleScreen() {
             ),
             placeholder = {
                 Text(text = "Search an article...")
-            })
+            }, singleLine = true
+        )
         Spacer(modifier = Modifier.height(20.dp))
         LazyRow(
             modifier = Modifier.fillMaxWidth(),
@@ -104,42 +121,58 @@ fun MiddleScreen() {
             }
         }
         Spacer(modifier = Modifier.height(20.dp))
-        LazyRow(
-            Modifier.fillMaxWidth(),
-            contentPadding = PaddingValues(start = 20.dp, end = 12.dp),
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            items(10) {
-                NewsRowItem(
-                    image = "https://assets.weforum.org/article/image/large_jOJFpEYTByvUuTqpYN0TACiFchfnKOBhvcYv_W2nK_s.jpg",
-                    tag = "Technology",
-                    title = "Worlds most futuristic companies yet",
-                    author = "Peter G.",
-                    createdAt = "10-07-2022",
-                    userImage = "https://pbs.twimg.com/profile_images/1381981120/petergriffinbh9_400x400.jpg"
-                )
+        LazyColumn(horizontalAlignment = Alignment.CenterHorizontally) {
+            item {
+                LazyRow(
+                    Modifier.fillMaxWidth(),
+                    contentPadding = PaddingValues(start = 20.dp, end = 12.dp),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    items(10) {
+                        NewsRowItem(
+                            image = "https://assets.weforum.org/article/image/large_jOJFpEYTByvUuTqpYN0TACiFchfnKOBhvcYv_W2nK_s.jpg",
+                            tag = "Technology",
+                            title = "Worlds most futuristic companies yet",
+                            author = "Peter G.",
+                            createdAt = "10-07-2022",
+                            userImage = "https://pbs.twimg.com/profile_images/1381981120/petergriffinbh9_400x400.jpg"
+                        )
+                    }
+                }
+                Spacer(modifier = Modifier.height(12.dp))
+                Row(
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 20.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "Recommendation",
+                        fontSize = 17.sp,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.weight(
+                            1F
+                        )
+                    )
+                    Text(
+                        text = "See More",
+                        color = Color.Blue.copy(alpha = 0.6F),
+                        fontWeight = FontWeight.SemiBold
+                    )
+                }
+                Spacer(modifier = Modifier.height(20.dp))
             }
-        }
-        Spacer(modifier = Modifier.height(12.dp))
-        Row(
-            Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 20.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = "Recommendation",
-                fontSize = 17.sp,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.weight(
-                    1F
+            items(10) {
+                RecommendationList(
+                    image = "https://asset.kompas.com/crops/N" +
+                            "9ypwWuI3HHx9vpt0uXM8trm42k=/0x0:594x396/750x500/data/photo/" +
+                            "2021/09/07/6136d27bef422.jpg",
+                    tag = "Technology",
+                    title = "Ps5 Massive production in progress",
+                    createdAt = "7-5-2021"
                 )
-            )
-            Text(
-                text = "See More",
-                color = Color.Blue.copy(alpha = 0.6F),
-                fontWeight = FontWeight.SemiBold
-            )
+                Spacer(modifier = Modifier.height(12.dp))
+            }
         }
     }
 }
@@ -233,9 +266,7 @@ fun NewsRowItem(
         mutableStateOf(150.dp)
     }
     val animateSize = animateDpAsState(cardSize, animationSpec = tween(300))
-    Card(shape = RoundedCornerShape(12.dp), modifier = Modifier.clickable {
-        cardSize = if (cardSize != 300.dp) 300.dp else 150.dp
-    }) {
+    Card(shape = RoundedCornerShape(12.dp)) {
         val context = LocalContext.current
         Column(
             Modifier
@@ -251,7 +282,7 @@ fun NewsRowItem(
                         .clip(RoundedCornerShape(8.dp)),
                     contentScale = ContentScale.Crop
                 )
-                if (animateSize.value != 300.dp)
+                if (cardSize != 300.dp)
                     Row(
                         Modifier
                             .fillMaxWidth()
@@ -277,7 +308,9 @@ fun NewsRowItem(
                             overflow = TextOverflow.Ellipsis,
                             fontWeight = FontWeight.Light, color = Color.White
                         )
-                        IconButton(onClick = { }) {
+                        IconButton(onClick = {
+                            cardSize = if (cardSize != 300.dp) 300.dp else 150.dp
+                        }) {
                             Icon(
                                 imageVector = Icons.Filled.ArrowBackIos,
                                 contentDescription = "show more",
@@ -334,6 +367,18 @@ fun NewsRowItem(
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(text = createdAt, fontWeight = FontWeight.SemiBold, color = Color.LightGray)
+                IconButton(onClick = {
+                    cardSize = if (cardSize != 300.dp) 300.dp else 150.dp
+                }) {
+                    Icon(
+                        imageVector = Icons.Filled.ArrowBackIos,
+                        contentDescription = "show more",
+                        modifier = Modifier
+                            .size(17.dp)
+                            .padding()
+                            .rotate(90F), tint = Color.Black
+                    )
+                }
             }
         }
     }
@@ -344,5 +389,31 @@ fun NewsRowItem(
 fun RecommendationList(
     image: String, tag: String, title: String, createdAt: String
 ) {
-
+    Card(modifier = Modifier.fillMaxWidth(0.9F), shape = RoundedCornerShape(8.dp)) {
+        Row {
+            AsyncImage(
+                model = image,
+                contentDescription = "",
+                modifier = Modifier
+                    .size(85.dp)
+                    .padding(3.dp)
+                    .clip(RoundedCornerShape(4.dp)),
+                contentScale = ContentScale.FillBounds
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Column(Modifier.padding(top = 8.dp)) {
+                Row(modifier = Modifier.padding(end = 12.dp)) {
+                    Text(text = tag, color = Color.LightGray, modifier = Modifier.weight(1F))
+                    Text(text = createdAt, color = Color.LightGray)
+                }
+                Spacer(modifier = Modifier.height(12.dp))
+                Text(
+                    title,
+                    fontWeight = FontWeight.SemiBold,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
+        }
+    }
 }

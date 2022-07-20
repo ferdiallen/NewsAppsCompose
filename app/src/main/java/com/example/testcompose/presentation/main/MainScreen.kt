@@ -26,6 +26,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
@@ -35,32 +36,42 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
+import androidx.navigation.compose.currentBackStackEntryAsState
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import com.example.testcompose.core.navigation.NavigationSealedClass
 import com.example.testcompose.utils.ImageRequestLoader
+import com.example.testcompose.utils.listBottomMenuNavigation
 
 private val tagListName = listOf("All", "Games", "Sports", "Technology")
 
 @Composable
-fun MainScreen(vm: MainScreenViewModel = hiltViewModel()) {
+fun MainScreen(controller: NavController, vm: MainScreenViewModel = hiltViewModel()) {
     val interactionSource = remember {
         MutableInteractionSource()
     }
+    val navBarStackEntry by controller.currentBackStackEntryAsState()
     val focusRequest = LocalFocusManager.current
     Scaffold(
         Modifier.fillMaxSize(), bottomBar = {
             BottomNavigation(backgroundColor = Color.LightGray) {
-                BottomNavigationItem(
-                    selected = true,
-                    onClick = { /*TODO*/ },
-                    icon = {
-                        Icon(imageVector = Icons.Filled.Home, contentDescription = "")
-                    },
-                    unselectedContentColor = Color.Gray,
-                    selectedContentColor = Color.Blue.copy(0.6F), label = {
-                        Text(text = "Home")
-                    }
-                )
+                val currentNav = navBarStackEntry?.destination?.route
+                listBottomMenuNavigation.forEach {
+                    BottomNavigationItem(
+                        selected = currentNav == it.route,
+                        onClick = {
+
+                        },
+                        icon = {
+                            Icon(imageVector = it.icon as ImageVector, contentDescription = "")
+                        },
+                        unselectedContentColor = Color.Gray,
+                        selectedContentColor = Color.Blue.copy(0.6F), label = {
+                            Text(text = it.title.toString())
+                        }
+                    )
+                }
             }
         }
     ) { contentPadding ->
@@ -70,7 +81,7 @@ fun MainScreen(vm: MainScreenViewModel = hiltViewModel()) {
                 .padding(contentPadding)
                 .background(
                     brush = Brush.verticalGradient(
-                        listOf(Color.White, Color.Gray.copy(alpha = 0.8F)), startY = 100F
+                        listOf(Color.White, Color.Gray.copy(alpha = 0.6F)), startY = 800F
                     )
                 )
                 .clickable(indication = null, interactionSource = interactionSource, onClick = {
@@ -229,12 +240,14 @@ fun HeaderRow() {
 
 @Composable
 fun TagList(
-    textTag: String, backgroundColor: Color? = Color.White, imageAddress: String
+    textTag: String,
+    backgroundColor: Color? = Color.LightGray.copy(alpha = 0.5F),
+    imageAddress: String
 ) {
     val context = LocalContext.current
     Box(modifier = Modifier
         .clip(RoundedCornerShape(32.dp))
-        .background(backgroundColor ?: Color.White)
+        .background(color = backgroundColor as Color)
         .clickable {
             Toast
                 .makeText(context, "Clicked", Toast.LENGTH_SHORT)
@@ -252,7 +265,8 @@ fun TagList(
             Spacer(modifier = Modifier.width(12.dp))
             Text(
                 text = textTag,
-                color = if (backgroundColor != Color.White) Color.White else Color.Gray
+                color = if (backgroundColor != Color.LightGray.copy(alpha = 0.5F))
+                    Color.White else Color.Gray
             )
         }
     }

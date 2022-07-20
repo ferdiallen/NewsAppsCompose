@@ -18,12 +18,18 @@ fun MainNavigationCompose() {
     }
     NavHost(navController = controller, startDestination = NavigationSealedClass.MainMenu.route) {
         composable(route = NavigationSealedClass.MainMenu.route) {
-            MainScreen()
+            MainScreen(controller)
         }
-        composable(route = NavigationSealedClass.CreateMenu.route){
+        composable(route = NavigationSealedClass.CreateMenu.route) {
 
         }
-        composable(route = NavigationSealedClass.SettingsMenu.route){
+        composable(route = NavigationSealedClass.SettingsMenu.route) {
+
+        }
+        composable(route = NavigationSealedClass.ExploreMenu.route) {
+
+        }
+        composable(route = NavigationSealedClass.SavedMenu.route) {
 
         }
     }

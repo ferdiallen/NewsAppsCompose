@@ -16,7 +16,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBackIos
-import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.runtime.*
@@ -40,7 +39,6 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
-import com.example.testcompose.core.navigation.NavigationSealedClass
 import com.example.testcompose.utils.ImageRequestLoader
 import com.example.testcompose.utils.listBottomMenuNavigation
 
@@ -179,7 +177,7 @@ fun MiddleScreen(vm: MainScreenViewModel) {
                             "9ypwWuI3HHx9vpt0uXM8trm42k=/0x0:594x396/750x500/data/photo/" +
                             "2021/09/07/6136d27bef422.jpg",
                     tag = "Technology",
-                    title = "Ps5 Massive production in progress",
+                    title = "Ps5 Massive production in progress oakwokwokwaokwdaowokdoawd",
                     createdAt = "7-5-2021"
                 )
                 Spacer(modifier = Modifier.height(12.dp))
@@ -420,12 +418,14 @@ fun RecommendationList(
                     Text(text = tag, color = Color.LightGray, modifier = Modifier.weight(1F))
                     Text(text = createdAt, color = Color.LightGray)
                 }
-                Spacer(modifier = Modifier.height(12.dp))
+                Spacer(modifier = Modifier.height(2.dp))
                 Text(
                     title,
                     fontWeight = FontWeight.SemiBold,
                     maxLines = 2,
-                    overflow = TextOverflow.Ellipsis
+                    overflow = TextOverflow.Ellipsis,
+                    fontSize = 17.sp,
+                    modifier = Modifier.padding(end = 12.dp)
                 )
             }
         }

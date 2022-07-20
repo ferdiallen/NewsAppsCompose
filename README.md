@@ -1,4 +1,4 @@
-# NewsAppsCompose
+# NewsAppsCompose :newspaper:
 News apps written fully in kotlin programming language and Jetpack compose for its Framework.Following the Clean Architecture guide.
 
 NewsApps utilize the latest technology made by google to developed apps in an entirely new and easy ways for developer.
@@ -12,7 +12,9 @@ It is written in Kotlin Programming language and using Jetpack Compose for its d
 5. Navigation Compose
 6. Room Database
 7. Pagination
-8. Coming Soon
+8. Ktor-Client
+9. Kotlinx-Serialization
+10.Coming Soon
 
 # More to come
 

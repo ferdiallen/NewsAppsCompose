@@ -1,5 +1,6 @@
 package com.example.testcompose.presentation.main
 
+import android.content.Context
 import android.widget.Toast
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
@@ -36,16 +37,22 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.currentBackStackEntryAsState
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import com.example.testcompose.core.navigation.NavigationSealedClass
 import com.example.testcompose.utils.ImageRequestLoader
 import com.example.testcompose.utils.listBottomMenuNavigation
 
 private val tagListName = listOf("All", "Games", "Sports", "Technology")
 
 @Composable
-fun MainScreen(controller: NavController, vm: MainScreenViewModel = hiltViewModel()) {
+fun MainScreen(
+    controller: NavController,
+    vm: MainScreenViewModel = hiltViewModel(),
+    context: Context = LocalContext.current
+) {
     val interactionSource = remember {
         MutableInteractionSource()
     }
@@ -59,7 +66,10 @@ fun MainScreen(controller: NavController, vm: MainScreenViewModel = hiltViewMode
                     BottomNavigationItem(
                         selected = currentNav == it.route,
                         onClick = {
-
+                            controller.navigate(it.route) {
+                                popUpTo(controller.graph.findStartDestination().id)
+                                launchSingleTop = true
+                            }
                         },
                         icon = {
                             Icon(imageVector = it.icon as ImageVector, contentDescription = "")
@@ -89,13 +99,13 @@ fun MainScreen(controller: NavController, vm: MainScreenViewModel = hiltViewMode
             Spacer(modifier = Modifier.height(12.dp))
             HeaderRow()
             Spacer(modifier = Modifier.height(24.dp))
-            MiddleScreen(vm)
+            MiddleScreen(vm,controller)
         }
     }
 }
 
 @Composable
-fun MiddleScreen(vm: MainScreenViewModel) {
+fun MiddleScreen(vm: MainScreenViewModel,controller: NavController) {
     Column(
         Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -145,7 +155,9 @@ fun MiddleScreen(vm: MainScreenViewModel) {
                             author = "Peter G.",
                             createdAt = "10-07-2022",
                             userImage = "https://pbs.twimg.com/profile_images/1381981120/petergriffinbh9_400x400.jpg"
-                        )
+                        ){
+                            controller.navigate(NavigationSealedClass.ReadMenu.route)
+                        }
                     }
                 }
                 Spacer(modifier = Modifier.height(12.dp))
@@ -242,14 +254,11 @@ fun TagList(
     backgroundColor: Color? = Color.LightGray.copy(alpha = 0.5F),
     imageAddress: String
 ) {
-    val context = LocalContext.current
     Box(modifier = Modifier
         .clip(RoundedCornerShape(32.dp))
         .background(color = backgroundColor as Color)
         .clickable {
-            Toast
-                .makeText(context, "Clicked", Toast.LENGTH_SHORT)
-                .show()
+
         }) {
         Row(
             Modifier
@@ -272,13 +281,16 @@ fun TagList(
 
 @Composable
 fun NewsRowItem(
-    image: String, tag: String, title: String, author: String, createdAt: String, userImage: String
+    image: String, tag: String, title: String, author: String, createdAt: String, userImage: String,
+    onClick: () -> Unit
 ) {
     var cardSize by remember {
         mutableStateOf(150.dp)
     }
     val animateSize = animateDpAsState(cardSize, animationSpec = tween(300))
-    Card(shape = RoundedCornerShape(12.dp)) {
+    Card(shape = RoundedCornerShape(12.dp), modifier = Modifier.clickable {
+        onClick.invoke()
+    }) {
         val context = LocalContext.current
         Column(
             Modifier
@@ -294,6 +306,26 @@ fun NewsRowItem(
                         .clip(RoundedCornerShape(8.dp)),
                     contentScale = ContentScale.Crop
                 )
+                Box(
+                    contentAlignment = Alignment.TopEnd,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 12.dp, end = 10.dp)
+                ) {
+                    Card(
+                        modifier = Modifier
+                            .clip(CircleShape)
+                    ) {
+                        Row(modifier = Modifier.padding(start = 14.dp, end = 14.dp)) {
+                            Text(
+                                text = "Hot",
+                                color = Color.Black,
+                                textAlign = TextAlign.Center,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                    }
+                }
                 if (cardSize != 300.dp)
                     Row(
                         Modifier

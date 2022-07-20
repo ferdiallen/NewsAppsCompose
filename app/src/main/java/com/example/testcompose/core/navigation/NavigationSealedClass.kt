@@ -15,7 +15,7 @@ sealed class NavigationSealedClass(
 
     object RegisterMenu : NavigationSealedClass("login_screen")
     object SelectionMenu : NavigationSealedClass("login_screen")
-    object ReadMenu : NavigationSealedClass("login_screen")
+    object ReadMenu : NavigationSealedClass("read_screen")
     object SettingsMenu :
         NavigationSealedClass("settings_menu", title = "Settings", icon = Icons.Filled.Settings)
 
@@ -23,8 +23,8 @@ sealed class NavigationSealedClass(
         NavigationSealedClass("create_post_menu", title = "Create", icon = Icons.Filled.Create)
 
     object ExploreMenu :
-        NavigationSealedClass("create_post_menu", title = "Explore", icon = Icons.Filled.Explore)
+        NavigationSealedClass("explore_menu", title = "Explore", icon = Icons.Filled.Explore)
 
     object SavedMenu :
-        NavigationSealedClass("create_post_menu", title = "Saved", icon = Icons.Filled.Save)
+        NavigationSealedClass("saved_menu", title = "Saved", icon = Icons.Filled.Save)
 }

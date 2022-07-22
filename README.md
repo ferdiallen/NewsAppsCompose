@@ -14,7 +14,8 @@ It is written in Kotlin Programming language and using Jetpack Compose for its d
 7. Pagination
 8. Ktor-Client
 9. Kotlinx-Serialization
-10. Coming Soon
+10. Coroutines (Asynchronous)
+11. Coming soon
 
 # More to come
 

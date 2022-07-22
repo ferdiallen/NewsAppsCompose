@@ -1,7 +1,6 @@
 package com.example.testcompose.presentation.main
 
 import android.content.Context
-import android.widget.Toast
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
@@ -105,7 +104,7 @@ fun MainScreen(
 }
 
 @Composable
-fun MiddleScreen(vm: MainScreenViewModel,controller: NavController) {
+private fun MiddleScreen(vm: MainScreenViewModel,controller: NavController) {
     Column(
         Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -199,7 +198,7 @@ fun MiddleScreen(vm: MainScreenViewModel,controller: NavController) {
 }
 
 @Composable
-fun HeaderRow() {
+private fun HeaderRow() {
     Row(
         Modifier
             .fillMaxWidth()
@@ -249,7 +248,7 @@ fun HeaderRow() {
 }
 
 @Composable
-fun TagList(
+private fun TagList(
     textTag: String,
     backgroundColor: Color? = Color.LightGray.copy(alpha = 0.5F),
     imageAddress: String
@@ -280,7 +279,7 @@ fun TagList(
 }
 
 @Composable
-fun NewsRowItem(
+private fun NewsRowItem(
     image: String, tag: String, title: String, author: String, createdAt: String, userImage: String,
     onClick: () -> Unit
 ) {
@@ -430,7 +429,7 @@ fun NewsRowItem(
 }
 
 @Composable
-fun RecommendationList(
+private fun RecommendationList(
     image: String, tag: String, title: String, createdAt: String
 ) {
     Card(modifier = Modifier.fillMaxWidth(0.9F), shape = RoundedCornerShape(8.dp)) {

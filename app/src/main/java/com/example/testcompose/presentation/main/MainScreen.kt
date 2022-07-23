@@ -25,7 +25,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
@@ -36,13 +35,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import androidx.navigation.NavGraph.Companion.findStartDestination
-import androidx.navigation.compose.currentBackStackEntryAsState
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.testcompose.core.navigation.NavigationSealedClass
 import com.example.testcompose.utils.ImageRequestLoader
-import com.example.testcompose.utils.listBottomMenuNavigation
+import com.example.testcompose.utils.fonts
 
 private val tagListName = listOf("All", "Games", "Sports", "Technology")
 
@@ -50,61 +47,36 @@ private val tagListName = listOf("All", "Games", "Sports", "Technology")
 fun MainScreen(
     controller: NavController,
     vm: MainScreenViewModel = hiltViewModel(),
-    context: Context = LocalContext.current
+    context: Context = LocalContext.current,
+    paddingContent: PaddingValues
 ) {
     val interactionSource = remember {
         MutableInteractionSource()
     }
-    val navBarStackEntry by controller.currentBackStackEntryAsState()
     val focusRequest = LocalFocusManager.current
-    Scaffold(
-        Modifier.fillMaxSize(), bottomBar = {
-            BottomNavigation(backgroundColor = Color.LightGray) {
-                val currentNav = navBarStackEntry?.destination?.route
-                listBottomMenuNavigation.forEach {
-                    BottomNavigationItem(
-                        selected = currentNav == it.route,
-                        onClick = {
-                            controller.navigate(it.route) {
-                                popUpTo(controller.graph.findStartDestination().id)
-                                launchSingleTop = true
-                            }
-                        },
-                        icon = {
-                            Icon(imageVector = it.icon as ImageVector, contentDescription = "")
-                        },
-                        unselectedContentColor = Color.Gray,
-                        selectedContentColor = Color.Blue.copy(0.6F), label = {
-                            Text(text = it.title.toString())
-                        }
-                    )
-                }
-            }
-        }
-    ) { contentPadding ->
-        Column(
-            Modifier
-                .fillMaxSize()
-                .padding(contentPadding)
-                .background(
-                    brush = Brush.verticalGradient(
-                        listOf(Color.White, Color.Gray.copy(alpha = 0.6F)), startY = 800F
-                    )
+    Column(
+        Modifier
+            .fillMaxSize()
+            .background(
+                brush = Brush.verticalGradient(
+                    listOf(Color.White, Color.Gray.copy(alpha = 0.6F)), startY = 800F
                 )
-                .clickable(indication = null, interactionSource = interactionSource, onClick = {
-                    focusRequest.clearFocus()
-                })
-        ) {
-            Spacer(modifier = Modifier.height(12.dp))
-            HeaderRow()
-            Spacer(modifier = Modifier.height(24.dp))
-            MiddleScreen(vm,controller)
-        }
+            )
+            .padding(paddingContent)
+            .clickable(indication = null, interactionSource = interactionSource, onClick = {
+                focusRequest.clearFocus()
+            })
+    ) {
+        Spacer(modifier = Modifier.height(12.dp))
+        HeaderRow()
+        Spacer(modifier = Modifier.height(24.dp))
+        MiddleScreen(vm, controller)
     }
+
 }
 
 @Composable
-private fun MiddleScreen(vm: MainScreenViewModel,controller: NavController) {
+private fun MiddleScreen(vm: MainScreenViewModel, controller: NavController) {
     Column(
         Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -122,7 +94,11 @@ private fun MiddleScreen(vm: MainScreenViewModel,controller: NavController) {
                 focusedIndicatorColor = Color.Transparent
             ),
             placeholder = {
-                Text(text = "Search an article...")
+                Text(
+                    text = "Search an article...",
+                    fontFamily = fonts,
+                    fontWeight = FontWeight.Light
+                )
             }, singleLine = true
         )
         Spacer(modifier = Modifier.height(20.dp))
@@ -154,7 +130,7 @@ private fun MiddleScreen(vm: MainScreenViewModel,controller: NavController) {
                             author = "Peter G.",
                             createdAt = "10-07-2022",
                             userImage = "https://pbs.twimg.com/profile_images/1381981120/petergriffinbh9_400x400.jpg"
-                        ){
+                        ) {
                             controller.navigate(NavigationSealedClass.ReadMenu.route)
                         }
                     }
@@ -190,7 +166,9 @@ private fun MiddleScreen(vm: MainScreenViewModel,controller: NavController) {
                     tag = "Technology",
                     title = "Ps5 Massive production in progress oakwokwokwaokwdaowokdoawd",
                     createdAt = "7-5-2021"
-                )
+                ) {
+                    controller.navigate(NavigationSealedClass.ReadMenu.route)
+                }
                 Spacer(modifier = Modifier.height(12.dp))
             }
         }
@@ -219,10 +197,16 @@ private fun HeaderRow() {
         )
         Spacer(modifier = Modifier.width(15.dp))
         Column(horizontalAlignment = Alignment.Start, modifier = Modifier.weight(2F)) {
-            Text(text = "Welcome Back !", color = Color.Gray)
-            Spacer(modifier = Modifier.height(6.dp))
             Text(
-                text = "Mikazuki !", fontWeight = FontWeight.Bold, fontSize = 18.sp
+                text = "Welcome Back !", color = Color.LightGray, fontWeight = FontWeight.SemiBold,
+                fontFamily = fonts
+            )
+            Spacer(modifier = Modifier.height(2.dp))
+            Text(
+                text = "Mikazuki !",
+                fontWeight = FontWeight.SemiBold,
+                fontSize = 18.sp,
+                fontFamily = fonts
             )
         }
         Box(
@@ -272,7 +256,8 @@ private fun TagList(
             Text(
                 text = textTag,
                 color = if (backgroundColor != Color.LightGray.copy(alpha = 0.5F))
-                    Color.White else Color.Gray
+                    Color.White else Color.Gray,
+                fontFamily = fonts, fontWeight = FontWeight.Light
             )
         }
     }
@@ -349,7 +334,8 @@ private fun NewsRowItem(
                             fontSize = 17.sp,
                             maxLines = 2,
                             overflow = TextOverflow.Ellipsis,
-                            fontWeight = FontWeight.Light, color = Color.White
+                            fontWeight = FontWeight.Light, color = Color.White,
+                            fontFamily = fonts
                         )
                         IconButton(onClick = {
                             cardSize = if (cardSize != 300.dp) 300.dp else 150.dp
@@ -371,7 +357,8 @@ private fun NewsRowItem(
                 modifier = Modifier.padding(start = 12.dp),
                 color = Color.LightGray,
                 fontSize = 15.sp,
-                fontWeight = FontWeight.SemiBold
+                fontWeight = FontWeight.SemiBold,
+                fontFamily = fonts
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
@@ -381,7 +368,8 @@ private fun NewsRowItem(
                 fontSize = 17.sp,
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
+                fontFamily = fonts
             )
             Spacer(modifier = Modifier.height(14.dp))
             Row(
@@ -400,7 +388,10 @@ private fun NewsRowItem(
                         )
                 )
                 Spacer(modifier = Modifier.width(12.dp))
-                Text(text = author, fontWeight = FontWeight.Bold)
+                Text(
+                    text = author, fontWeight = FontWeight.Bold,
+                    fontFamily = fonts
+                )
                 Spacer(modifier = Modifier.width(8.dp))
                 Box(
                     modifier = Modifier
@@ -409,7 +400,10 @@ private fun NewsRowItem(
                         .background(Color.LightGray)
                 )
                 Spacer(modifier = Modifier.width(8.dp))
-                Text(text = createdAt, fontWeight = FontWeight.SemiBold, color = Color.LightGray)
+                Text(
+                    text = createdAt, fontWeight = FontWeight.SemiBold, color = Color.LightGray,
+                    fontFamily = fonts
+                )
                 IconButton(onClick = {
                     cardSize = if (cardSize != 300.dp) 300.dp else 150.dp
                 }) {
@@ -430,9 +424,15 @@ private fun NewsRowItem(
 
 @Composable
 private fun RecommendationList(
-    image: String, tag: String, title: String, createdAt: String
+    image: String, tag: String, title: String, createdAt: String, onClick: () -> Unit
 ) {
-    Card(modifier = Modifier.fillMaxWidth(0.9F), shape = RoundedCornerShape(8.dp)) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth(0.9F)
+            .clickable {
+                onClick.invoke()
+            }, shape = RoundedCornerShape(8.dp)
+    ) {
         Row {
             AsyncImage(
                 model = image,
@@ -446,8 +446,14 @@ private fun RecommendationList(
             Spacer(modifier = Modifier.width(8.dp))
             Column(Modifier.padding(top = 8.dp)) {
                 Row(modifier = Modifier.padding(end = 12.dp)) {
-                    Text(text = tag, color = Color.LightGray, modifier = Modifier.weight(1F))
-                    Text(text = createdAt, color = Color.LightGray)
+                    Text(
+                        text = tag, color = Color.LightGray, modifier = Modifier.weight(1F),
+                        fontFamily = fonts, fontWeight = FontWeight.Light
+                    )
+                    Text(
+                        text = createdAt, color = Color.LightGray,
+                        fontFamily = fonts, fontWeight = FontWeight.Light
+                    )
                 }
                 Spacer(modifier = Modifier.height(2.dp))
                 Text(
@@ -456,8 +462,10 @@ private fun RecommendationList(
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
                     fontSize = 17.sp,
-                    modifier = Modifier.padding(end = 12.dp)
+                    modifier = Modifier.padding(end = 12.dp),
+                    fontFamily = fonts
                 )
+                Spacer(modifier = Modifier.height(4.dp))
             }
         }
     }

@@ -8,9 +8,7 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Card
-import androidx.compose.material.Divider
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -83,6 +81,34 @@ private fun MiddleScreen() {
                     name = "World",
                     com.example.testcompose.R.drawable.world,
                     selected = it % 2 == 0
+                )
+            }
+        }
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(bottom = 22.dp),
+            contentAlignment = Alignment.BottomCenter
+        ) {
+            Button(
+                onClick = {
+
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .fillMaxHeight(0.29F),
+                colors = ButtonDefaults.buttonColors(backgroundColor = Color.Blue),
+                shape = RoundedCornerShape(24.dp),
+                elevation = ButtonDefaults.elevation(
+                    defaultElevation = 3.dp,
+                    pressedElevation = 12.dp
+                )
+            ) {
+                Text(
+                    text = "Continue",
+                    color = Color.White,
+                    fontFamily = fonts,
+                    fontWeight = FontWeight.Light, fontSize = 16.sp
                 )
             }
         }

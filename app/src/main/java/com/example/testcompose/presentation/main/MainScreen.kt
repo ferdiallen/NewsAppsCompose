@@ -107,7 +107,7 @@ private fun MiddleScreen(vm: MainScreenViewModel, controller: NavController) {
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             contentPadding = PaddingValues(start = 18.dp, end = 12.dp)
         ) {
-            items(tagListName) { out ->
+            items(tagListName) {out ->
                 TagList(
                     textTag = out,
                     imageAddress = "https://cdn.kibrispdr.org/data/799/playstation-5-logo-png-50.png"

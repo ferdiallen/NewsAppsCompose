@@ -15,6 +15,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.example.testcompose.presentation.boarding.BoardingScreen
 import com.example.testcompose.presentation.main.MainScreen
 import com.example.testcompose.presentation.read.ReadScreen
 import com.example.testcompose.utils.fonts
@@ -66,7 +67,7 @@ fun MainNavigationCompose() {
     ) { contentPadding ->
         NavHost(
             navController = controller,
-            startDestination = NavigationSealedClass.MainMenu.route
+            startDestination = NavigationSealedClass.SelectionMenu.route
         ) {
             composable(route = NavigationSealedClass.ReadMenu.route) {
                 ReadScreen(controller = controller)
@@ -85,6 +86,9 @@ fun MainNavigationCompose() {
             }
             composable(route = NavigationSealedClass.SavedMenu.route) {
                 MainScreen(controller, paddingContent = contentPadding)
+            }
+            composable(route = NavigationSealedClass.SelectionMenu.route) {
+                BoardingScreen(controller = controller)
             }
         }
     }

@@ -14,7 +14,7 @@ sealed class NavigationSealedClass(
         NavigationSealedClass("login_screen", title = "Home", icon = Icons.Filled.Home)
 
     object RegisterMenu : NavigationSealedClass("login_screen")
-    object SelectionMenu : NavigationSealedClass("login_screen")
+    object SelectionMenu : NavigationSealedClass("selection_screen")
     object ReadMenu : NavigationSealedClass("read_screen")
     object SettingsMenu :
         NavigationSealedClass("settings_menu", title = "Settings", icon = Icons.Filled.Settings)

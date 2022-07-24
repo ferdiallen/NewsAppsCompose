@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.testcompose.utils.ImageRequestLoader
+import com.example.testcompose.utils.fonts
 
 @Composable
 fun ReadScreen(controller: NavController) {
@@ -141,9 +142,15 @@ private fun MiddleScreen(
             .fillMaxWidth()
             .padding(horizontal = 16.dp)
     ) {
-        Text(text = tag, fontSize = 22.sp, color = Color.Gray)
+        Text(
+            text = tag,
+            fontSize = 22.sp,
+            color = Color.Gray,
+            fontFamily = fonts,
+            fontWeight = FontWeight.Light
+        )
         Spacer(modifier = Modifier.height(4.dp))
-        Text(text = title, fontSize = 28.sp, fontWeight = FontWeight.SemiBold)
+        Text(text = title, fontSize = 28.sp, fontWeight = FontWeight.SemiBold, fontFamily = fonts)
         Spacer(modifier = Modifier.height(8.dp))
         Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
             AsyncImage(
@@ -182,8 +189,8 @@ private fun MiddleScreen(
                 Text(
                     text = fullStory,
                     fontSize = 20.sp,
-                    fontWeight = FontWeight.Normal,
-                    color = Color.Gray
+                    fontWeight = FontWeight.Light,
+                    color = Color.Gray, fontFamily = fonts
                 )
                 Spacer(modifier = Modifier.height(12.dp))
             }

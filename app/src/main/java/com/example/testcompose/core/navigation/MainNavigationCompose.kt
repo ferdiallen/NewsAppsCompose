@@ -6,6 +6,7 @@ import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -32,8 +33,10 @@ fun MainNavigationCompose() {
     }
     Scaffold(
         Modifier.fillMaxSize(), bottomBar = {
-            val hasRoutes = listBottomMenuNavigation.find {
-                it.route == navBarStackEntry?.destination?.route
+            val hasRoutes = remember(navBarStackEntry) {
+                listBottomMenuNavigation.find {
+                    it.route == navBarStackEntry?.destination?.route
+                }
             }
             if (hasRoutes != null) {
                 BottomNavigation(backgroundColor = Color.LightGray) {
@@ -43,8 +46,11 @@ fun MainNavigationCompose() {
                             selected = currentNav == it.route,
                             onClick = {
                                 controller.navigate(it.route) {
-                                    popUpTo(controller.graph.findStartDestination().id)
+                                    popUpTo(listBottomMenuNavigation[0].route) {
+                                        saveState = true
+                                    }
                                     launchSingleTop = true
+                                    restoreState = true
                                 }
                             },
                             icon = {

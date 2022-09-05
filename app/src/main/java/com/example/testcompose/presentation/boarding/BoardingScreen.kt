@@ -9,7 +9,7 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import com.example.testcompose.core.navigation.NavigationSealedClass
 import com.example.testcompose.utils.fonts
 
 @Composable
@@ -28,7 +29,7 @@ fun BoardingScreen(controller: NavController) {
         Spacer(modifier = Modifier.height(17.dp))
         Divider()
         Spacer(modifier = Modifier.height(20.dp))
-        MiddleScreen()
+        MiddleScreen(controller)
     }
 }
 
@@ -60,7 +61,10 @@ private fun HeaderScreen() {
 }
 
 @Composable
-private fun MiddleScreen() {
+private fun MiddleScreen(controller: NavController) {
+    var selectedItem: Int? by remember {
+        mutableStateOf(null)
+    }
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -74,14 +78,15 @@ private fun MiddleScreen() {
         LazyVerticalGrid(
             columns = GridCells.Fixed(3),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+            verticalArrangement = Arrangement.spacedBy(8.dp), userScrollEnabled = false
         ) {
             items(9) {
                 ItemsTagCategories(
                     name = "World",
-                    com.example.testcompose.R.drawable.world,
-                    selected = it % 2 == 0
-                )
+                    com.example.testcompose.R.drawable.world, it == selectedItem, id = it
+                ) { out ->
+                    selectedItem = out
+                }
             }
         }
         Box(
@@ -92,7 +97,11 @@ private fun MiddleScreen() {
         ) {
             Button(
                 onClick = {
-
+                    controller.navigate(NavigationSealedClass.MainMenu.route) {
+                        popUpTo(controller.currentDestination?.route.toString()) {
+                            inclusive = true
+                        }
+                    }
                 },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -116,16 +125,26 @@ private fun MiddleScreen() {
 }
 
 @Composable
-private fun <T> ItemsTagCategories(name: String, image: T, selected: Boolean) {
+private fun <T> ItemsTagCategories(
+    name: String,
+    image: T,
+    selected: Boolean = false,
+    id: Int,
+    clicked: (Int) -> Unit
+) {
     Card(
         shape = CircleShape,
         modifier = Modifier
             .size(105.dp, height = 120.dp)
+            .clip(CircleShape)
             .border(
                 if (selected) 2.dp else 1.dp,
                 color = if (selected) Color.Blue else Color.Gray,
                 CircleShape
             )
+            .clickable {
+                clicked.invoke(id)
+            }
     ) {
         Column(
             modifier = Modifier

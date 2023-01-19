@@ -1,24 +1,56 @@
-package com.example.testcompose.presentation.main
+@file:OptIn(ExperimentalMaterialApi::class)
+
+package com.allen.mainscreen
 
 import android.content.Context
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
+import androidx.compose.material.Badge
+import androidx.compose.material.BadgedBox
+import androidx.compose.material.Card
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
+import androidx.compose.material.OutlinedTextField
+import androidx.compose.material.Surface
+import androidx.compose.material.Text
+import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBackIos
 import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material.icons.outlined.Search
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -34,18 +66,14 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavController
 import coil.compose.AsyncImage
-import coil.request.ImageRequest
-import com.example.testcompose.core.navigation.NavigationSealedClass
-import com.example.testcompose.utils.ImageRequestLoader
-import com.example.testcompose.utils.fonts
+import com.allen.core.util.ImageRequestLoader
 
 private val tagListName = listOf("All", "Games", "Sports", "Technology")
 
 @Composable
 fun MainScreen(
-    controller: NavController,
+    onClick: () -> Unit,
     vm: MainScreenViewModel = hiltViewModel(),
     context: Context = LocalContext.current,
     paddingContent: PaddingValues
@@ -53,6 +81,7 @@ fun MainScreen(
     val interactionSource = remember {
         MutableInteractionSource()
     }
+    val currentImage by vm.selectedUserProfile.collectAsState()
     val focusRequest = LocalFocusManager.current
     Column(
         Modifier
@@ -68,15 +97,19 @@ fun MainScreen(
             })
     ) {
         Spacer(modifier = Modifier.height(12.dp))
-        HeaderRow()
+        HeaderRow(submitPhoto = {
+            vm.setProfilePicture(it)
+        },currentImage)
         Spacer(modifier = Modifier.height(24.dp))
-        MiddleScreen(vm, controller)
+        MiddleScreen(vm, onClick = {
+            onClick.invoke()
+        })
     }
 
 }
 
 @Composable
-private fun MiddleScreen(vm: MainScreenViewModel, controller: NavController) {
+private fun MiddleScreen(vm: MainScreenViewModel, onClick: () -> Unit) {
     Column(
         Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -96,7 +129,7 @@ private fun MiddleScreen(vm: MainScreenViewModel, controller: NavController) {
             placeholder = {
                 Text(
                     text = "Search an article...",
-                    fontFamily = fonts,
+
                     fontWeight = FontWeight.Light
                 )
             }, singleLine = true
@@ -107,7 +140,7 @@ private fun MiddleScreen(vm: MainScreenViewModel, controller: NavController) {
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             contentPadding = PaddingValues(start = 18.dp, end = 12.dp)
         ) {
-            items(tagListName) {out ->
+            items(tagListName) { out ->
                 TagList(
                     textTag = out,
                     imageAddress = "https://cdn.kibrispdr.org/data/799/playstation-5-logo-png-50.png"
@@ -131,7 +164,7 @@ private fun MiddleScreen(vm: MainScreenViewModel, controller: NavController) {
                             createdAt = "10-07-2022",
                             userImage = "https://pbs.twimg.com/profile_images/1381981120/petergriffinbh9_400x400.jpg"
                         ) {
-                            controller.navigate(NavigationSealedClass.ReadMenu.route)
+                            onClick.invoke()
                         }
                     }
                 }
@@ -167,7 +200,7 @@ private fun MiddleScreen(vm: MainScreenViewModel, controller: NavController) {
                     title = "Ps5 Massive production in progress oakwokwokwaokwdaowokdoawd",
                     createdAt = "7-5-2021"
                 ) {
-                    controller.navigate(NavigationSealedClass.ReadMenu.route)
+                    onClick.invoke()
                 }
                 Spacer(modifier = Modifier.height(12.dp))
             }
@@ -176,7 +209,14 @@ private fun MiddleScreen(vm: MainScreenViewModel, controller: NavController) {
 }
 
 @Composable
-private fun HeaderRow() {
+private fun HeaderRow(submitPhoto: (Uri?) -> Unit, selectedImage: Any?) {
+    val context = LocalContext.current
+    val photoPicker = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickVisualMedia(),
+        onResult = {
+            submitPhoto.invoke(it)
+        }
+    )
     Row(
         Modifier
             .fillMaxWidth()
@@ -184,36 +224,35 @@ private fun HeaderRow() {
         verticalAlignment = Alignment.CenterVertically
     ) {
         AsyncImage(
-            model = ImageRequest.Builder(LocalContext.current)
-                .data("https://cms-assets.tutsplus.com/uploads/users/1499/posts/29820/preview_image/kotlin.jpg")
-                .crossfade(500).build(),
+            model = ImageRequestLoader.requestImage(selectedImage, context),
             contentDescription = "",
             modifier = Modifier
                 .size(55.dp)
                 .clip(
                     CircleShape
-                ),
+                )
+                .clickable {
+                    photoPicker.launch(PickVisualMediaRequest(mediaType = ActivityResultContracts.PickVisualMedia.ImageOnly))
+                },
             contentScale = ContentScale.Crop
         )
         Spacer(modifier = Modifier.width(15.dp))
         Column(horizontalAlignment = Alignment.Start, modifier = Modifier.weight(2F)) {
             Text(
                 text = "Welcome Back !", color = Color.LightGray, fontWeight = FontWeight.SemiBold,
-                fontFamily = fonts
-            )
+
+                )
             Spacer(modifier = Modifier.height(2.dp))
             Text(
                 text = "Mikazuki !",
                 fontWeight = FontWeight.SemiBold,
                 fontSize = 18.sp,
-                fontFamily = fonts
-            )
+
+                )
         }
         Box(
             modifier = Modifier
                 .size(60.dp)
-                .clip(CircleShape)
-                .border(width = 1.dp, color = Color.LightGray, shape = CircleShape)
                 .clickable { },
             contentAlignment = Alignment.Center
         ) {
@@ -237,28 +276,31 @@ private fun TagList(
     backgroundColor: Color? = Color.LightGray.copy(alpha = 0.5F),
     imageAddress: String
 ) {
-    Box(modifier = Modifier
-        .clip(RoundedCornerShape(32.dp))
-        .background(color = backgroundColor as Color)
-        .clickable {
+    Surface(modifier = Modifier.wrapContentSize(), onClick = {
 
-        }) {
-        Row(
-            Modifier
-                .fillMaxWidth()
-                .padding(start = 24.dp, end = 24.dp, top = 8.dp, bottom = 8.dp),
-            verticalAlignment = Alignment.CenterVertically
+    }, shape = RoundedCornerShape(32.dp)) {
+        Box(
+            modifier = Modifier
+                .clip(RoundedCornerShape(32.dp))
+                .background(color = backgroundColor as Color)
         ) {
-            AsyncImage(
-                model = imageAddress, contentDescription = "", modifier = Modifier.size(30.dp)
-            )
-            Spacer(modifier = Modifier.width(12.dp))
-            Text(
-                text = textTag,
-                color = if (backgroundColor != Color.LightGray.copy(alpha = 0.5F))
-                    Color.White else Color.Gray,
-                fontFamily = fonts, fontWeight = FontWeight.Light
-            )
+            Row(
+                Modifier
+                    .fillMaxWidth()
+                    .padding(start = 24.dp, end = 24.dp, top = 8.dp, bottom = 8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                AsyncImage(
+                    model = imageAddress, contentDescription = "", modifier = Modifier.size(30.dp)
+                )
+                Spacer(modifier = Modifier.width(12.dp))
+                Text(
+                    text = textTag,
+                    color = if (backgroundColor != Color.LightGray.copy(alpha = 0.5F))
+                        Color.White else Color.Gray,
+                    fontWeight = FontWeight.Light
+                )
+            }
         }
     }
 }
@@ -335,8 +377,8 @@ private fun NewsRowItem(
                             maxLines = 2,
                             overflow = TextOverflow.Ellipsis,
                             fontWeight = FontWeight.Light, color = Color.White,
-                            fontFamily = fonts
-                        )
+
+                            )
                         IconButton(onClick = {
                             cardSize = if (cardSize != 300.dp) 300.dp else 150.dp
                         }) {
@@ -358,8 +400,8 @@ private fun NewsRowItem(
                 color = Color.LightGray,
                 fontSize = 15.sp,
                 fontWeight = FontWeight.SemiBold,
-                fontFamily = fonts
-            )
+
+                )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
                 text = title,
@@ -369,8 +411,8 @@ private fun NewsRowItem(
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
                 fontWeight = FontWeight.Bold,
-                fontFamily = fonts
-            )
+
+                )
             Spacer(modifier = Modifier.height(14.dp))
             Row(
                 Modifier
@@ -390,8 +432,8 @@ private fun NewsRowItem(
                 Spacer(modifier = Modifier.width(12.dp))
                 Text(
                     text = author, fontWeight = FontWeight.Bold,
-                    fontFamily = fonts
-                )
+
+                    )
                 Spacer(modifier = Modifier.width(8.dp))
                 Box(
                     modifier = Modifier
@@ -402,8 +444,8 @@ private fun NewsRowItem(
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
                     text = createdAt, fontWeight = FontWeight.SemiBold, color = Color.LightGray,
-                    fontFamily = fonts
-                )
+
+                    )
                 IconButton(onClick = {
                     cardSize = if (cardSize != 300.dp) 300.dp else 150.dp
                 }) {
@@ -448,11 +490,11 @@ private fun RecommendationList(
                 Row(modifier = Modifier.padding(end = 12.dp)) {
                     Text(
                         text = tag, color = Color.LightGray, modifier = Modifier.weight(1F),
-                        fontFamily = fonts, fontWeight = FontWeight.Light
+                        fontWeight = FontWeight.Light
                     )
                     Text(
                         text = createdAt, color = Color.LightGray,
-                        fontFamily = fonts, fontWeight = FontWeight.Light
+                        fontWeight = FontWeight.Light
                     )
                 }
                 Spacer(modifier = Modifier.height(2.dp))
@@ -463,8 +505,8 @@ private fun RecommendationList(
                     overflow = TextOverflow.Ellipsis,
                     fontSize = 17.sp,
                     modifier = Modifier.padding(end = 12.dp),
-                    fontFamily = fonts
-                )
+
+                    )
                 Spacer(modifier = Modifier.height(4.dp))
             }
         }

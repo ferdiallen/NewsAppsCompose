@@ -1,4 +1,4 @@
-package com.example.testcompose.presentation.boarding
+package com.allen.boardingscreen
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -19,17 +19,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
-import com.example.testcompose.core.navigation.NavigationSealedClass
-import com.example.testcompose.utils.fonts
+import com.allen.mainscreen.R
 
 @Composable
-fun BoardingScreen(controller: NavController) {
+fun BoardingScreen(popUpNavigatorClick: () -> Unit) {
     Column(Modifier.fillMaxSize()) {
         HeaderScreen()
         Spacer(modifier = Modifier.height(17.dp))
         Divider()
         Spacer(modifier = Modifier.height(20.dp))
-        MiddleScreen(controller)
+        MiddleScreen(popUpNavigatorClick::invoke)
     }
 }
 
@@ -41,7 +40,7 @@ private fun HeaderScreen() {
             .padding(horizontal = 12.dp), verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
-            "Some title", fontSize = 25.sp, fontWeight = FontWeight.Light, fontFamily = fonts,
+            "Some title", fontSize = 25.sp, fontWeight = FontWeight.Light,
             modifier = Modifier.weight(1F)
         )
         Card(
@@ -54,14 +53,14 @@ private fun HeaderScreen() {
             Text(
                 text = "Skip",
                 Modifier.padding(horizontal = 8.dp, vertical = 2.dp),
-                fontFamily = fonts, fontWeight = FontWeight.Light
+                fontWeight = FontWeight.Light
             )
         }
     }
 }
 
 @Composable
-private fun MiddleScreen(controller: NavController) {
+private fun MiddleScreen(controller: () -> Unit) {
     var selectedItem: Int? by remember {
         mutableStateOf(null)
     }
@@ -73,7 +72,7 @@ private fun MiddleScreen(controller: NavController) {
         Text(
             text = "Choose a topic to  start reading",
             fontSize = 24.sp,
-            fontWeight = FontWeight.SemiBold, fontFamily = fonts
+            fontWeight = FontWeight.SemiBold,
         )
         LazyVerticalGrid(
             columns = GridCells.Fixed(3),
@@ -83,7 +82,9 @@ private fun MiddleScreen(controller: NavController) {
             items(9) {
                 ItemsTagCategories(
                     name = "World",
-                    com.example.testcompose.R.drawable.world, it == selectedItem, id = it
+                    com.google.android.material.R.drawable.m3_appbar_background,
+                    it == selectedItem,
+                    id = it
                 ) { out ->
                     selectedItem = out
                 }
@@ -96,13 +97,7 @@ private fun MiddleScreen(controller: NavController) {
             contentAlignment = Alignment.BottomCenter
         ) {
             Button(
-                onClick = {
-                    controller.navigate(NavigationSealedClass.MainMenu.route) {
-                        popUpTo(controller.currentDestination?.route.toString()) {
-                            inclusive = true
-                        }
-                    }
-                },
+                onClick = controller::invoke,
                 modifier = Modifier
                     .fillMaxWidth()
                     .fillMaxHeight(0.29F),
@@ -116,7 +111,7 @@ private fun MiddleScreen(controller: NavController) {
                 Text(
                     text = "Continue",
                     color = Color.White,
-                    fontFamily = fonts,
+
                     fontWeight = FontWeight.Light, fontSize = 16.sp
                 )
             }
@@ -156,7 +151,7 @@ private fun <T> ItemsTagCategories(
         ) {
             Spacer(modifier = Modifier.height(12.dp))
             AsyncImage(model = image, contentDescription = "", modifier = Modifier.size(50.dp))
-            Text(text = name, fontFamily = fonts, fontWeight = FontWeight.Light)
+            Text(text = name, fontWeight = FontWeight.Light)
         }
     }
 }

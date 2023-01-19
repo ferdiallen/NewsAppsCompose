@@ -1,4 +1,4 @@
-package com.example.testcompose.presentation.read
+package com.allen.readscreen
 
 import android.content.Context
 import androidx.compose.foundation.background
@@ -26,8 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
-import com.example.testcompose.utils.ImageRequestLoader
-import com.example.testcompose.utils.fonts
+import com.allen.core.util.ImageRequestLoader
 
 @Composable
 fun ReadScreen(controller: NavController) {
@@ -146,11 +145,11 @@ private fun MiddleScreen(
             text = tag,
             fontSize = 22.sp,
             color = Color.Gray,
-            fontFamily = fonts,
+
             fontWeight = FontWeight.Light
         )
         Spacer(modifier = Modifier.height(4.dp))
-        Text(text = title, fontSize = 28.sp, fontWeight = FontWeight.SemiBold, fontFamily = fonts)
+        Text(text = title, fontSize = 28.sp, fontWeight = FontWeight.SemiBold, )
         Spacer(modifier = Modifier.height(8.dp))
         Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
             AsyncImage(
@@ -190,7 +189,7 @@ private fun MiddleScreen(
                     text = fullStory,
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Light,
-                    color = Color.Gray, fontFamily = fonts
+                    color = Color.Gray,
                 )
                 Spacer(modifier = Modifier.height(12.dp))
             }

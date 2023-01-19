@@ -3,6 +3,7 @@ package com.example.testcompose.core.navigation
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.navigation.NavController
 
 sealed class NavigationSealedClass(
     val route: String,
@@ -27,4 +28,15 @@ sealed class NavigationSealedClass(
 
     object SavedMenu :
         NavigationSealedClass("saved_menu", title = "Saved", icon = Icons.Filled.Save)
+}
+
+/**
+ * Navigation exclusive to boarding screen to Main Screen
+ */
+fun NavController.navigateToMainScreen() {
+    this.navigate(NavigationSealedClass.MainMenu.route) {
+        popUpTo(currentDestination?.route ?: NavigationSealedClass.SelectionMenu.route) {
+            inclusive = true
+        }
+    }
 }

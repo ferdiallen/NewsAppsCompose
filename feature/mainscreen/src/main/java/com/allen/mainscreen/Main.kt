@@ -1,4 +1,4 @@
-@file:OptIn(ExperimentalMaterialApi::class)
+@file:OptIn(ExperimentalMaterialApi::class, ExperimentalMaterialApi::class)
 
 package com.allen.mainscreen
 
@@ -10,7 +10,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -68,8 +67,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.allen.core.util.ImageRequestLoader
-
-private val tagListName = listOf("All", "Games", "Sports", "Technology")
+import com.allen.core.util.tagListName
 
 @Composable
 fun MainScreen(
@@ -99,7 +97,7 @@ fun MainScreen(
         Spacer(modifier = Modifier.height(12.dp))
         HeaderRow(submitPhoto = {
             vm.setProfilePicture(it)
-        },currentImage)
+        }, currentImage)
         Spacer(modifier = Modifier.height(24.dp))
         MiddleScreen(vm, onClick = {
             onClick.invoke()
@@ -157,12 +155,14 @@ private fun MiddleScreen(vm: MainScreenViewModel, onClick: () -> Unit) {
                 ) {
                     items(10) {
                         NewsRowItem(
-                            image = "https://assets.weforum.org/article/image/large_jOJFpEYTByvUuTqpYN0TACiFchfnKOBhvcYv_W2nK_s.jpg",
+                            image = "https://assets.weforum.org/article/image/large_" +
+                                    "jOJFpEYTByvUuTqpYN0TACiFchfnKOBhvcYv_W2nK_s.jpg",
                             tag = "Technology",
                             title = "Worlds most futuristic companies yet",
                             author = "Peter G.",
                             createdAt = "10-07-2022",
-                            userImage = "https://pbs.twimg.com/profile_images/1381981120/petergriffinbh9_400x400.jpg"
+                            userImage = "https://pbs.twimg.com/profile_images/1381981120/" +
+                                    "petergriffinbh9_400x400.jpg"
                         ) {
                             onClick.invoke()
                         }
@@ -232,7 +232,12 @@ private fun HeaderRow(submitPhoto: (Uri?) -> Unit, selectedImage: Any?) {
                     CircleShape
                 )
                 .clickable {
-                    photoPicker.launch(PickVisualMediaRequest(mediaType = ActivityResultContracts.PickVisualMedia.ImageOnly))
+                    photoPicker.launch(
+                        PickVisualMediaRequest(
+                            mediaType = ActivityResultContracts
+                                .PickVisualMedia.ImageOnly
+                        )
+                    )
                 },
             contentScale = ContentScale.Crop
         )
@@ -252,10 +257,13 @@ private fun HeaderRow(submitPhoto: (Uri?) -> Unit, selectedImage: Any?) {
         }
         Box(
             modifier = Modifier
-                .size(60.dp)
-                .clickable { },
+                .size(60.dp),
             contentAlignment = Alignment.Center
         ) {
+            Box(modifier = Modifier
+                .fillMaxSize()
+                .clip(CircleShape)
+                .clickable { })
             BadgedBox(badge = {
                 Badge {
                     Text(text = "20")

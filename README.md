@@ -13,7 +13,7 @@ implementation.
 3. Coil Image Library
 4. Dagger Hilt
 5. Navigation Compose
-6. Room Database
+6. Room Database (Soon to be migrated into realm database)
 7. Pagination
 8. Ktor-Client
 9. Kotlinx-Serialization
